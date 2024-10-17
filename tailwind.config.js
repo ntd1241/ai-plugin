@@ -19,6 +19,7 @@ module.exports = {
         'popover': '#FFFFFF',
         'accent': '#F1F5F9',
         'accent-foreground': '#0F172A',
+        'failed': '#F43F5E',
         
         //Jarvis Colors
         'jarvis-0.5': '#F0F8FF',

@@ -83,12 +83,12 @@ function ActionProcessing({ action, result }: ActionProcessingProps) {
             if (result?.success) {
                 setTitle(action.onSuccess);
                 setDescription("")
-                setIcon(<IconCheck/>)
+                setIcon(<IconCheck className='text-jarvis-5'/>)
             }
             else {
                 setTitle(action.onFailed);
                 setDescription(result.errorMsg ?? "");
-                setIcon(<IconX/>)
+                setIcon(<IconX className='text-failed'/>)
             }
         }
     }, [result])
