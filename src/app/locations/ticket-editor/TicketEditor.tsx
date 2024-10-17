@@ -196,7 +196,6 @@ const TicketEditor = () => {
     }, [client, menuState]); // Re-observe on menuState change
 
     const [activeAction, setActiveAction] = useState(Actions["draft-response"]);
-
     const [result, setResult] = useState<ResponseReturnProps>();
 
     const OnActionClick = async (action: ActionProps) => {
@@ -204,6 +203,7 @@ const TicketEditor = () => {
         setActiveAction(action);
         setResult(undefined);
         setResult(await action.action());
+        if (result?.success) client.set("ticket.comment.text", result.response);
         setTimeout(() => {
             setMenuState("menu");
         }, 2000);
