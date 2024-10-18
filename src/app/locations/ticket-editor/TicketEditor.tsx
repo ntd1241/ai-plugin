@@ -208,8 +208,8 @@ const TicketEditor = () => {
     setActiveAction(action)
     setResult(undefined)
     const actionResult = await action.action()
-    setResult(actionResult)
     if (actionResult?.success) await streamHandler(actionResult.response)
+    setResult(actionResult)
 
     setTimeout(() => {
       setMenuState('menu')
