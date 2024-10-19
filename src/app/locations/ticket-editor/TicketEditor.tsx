@@ -172,8 +172,10 @@ const TicketEditor = () => {
   const [menuState, setMenuState] = useState('menu')
   const [height, setHeight] = useState(240)
   const ref = useRef<HTMLDivElement>(null)
-  const [currentResponse, { set: setCurrentResponse, undo: undoResponse, redo: redoResponse, canUndo, canRedo }] =
-    useUndo<string>('')
+  const [
+    currentResponse,
+    { set: setCurrentResponse, undo: undoResponse, redo: redoResponse, reset: resetResponse, canUndo, canRedo }
+  ] = useUndo<string>('')
 
   let messageDraftTimeout: any
 
@@ -244,6 +246,9 @@ const TicketEditor = () => {
   // Auto draft when open ticket
   useEffect(() => {
     const initDraftTicket = async () => {
+      const currentComment = (await client.get('ticket.comment'))['ticket.comment'].text
+      resetResponse(currentComment)
+
       OnActionClick(ACTIONS['draft-response'])
     }
 
