@@ -220,7 +220,6 @@ const TicketEditor = () => {
 
   // Handler for stream response
   const streamHandler = async (res: Response | undefined) => {
-    console.log(res)
     if (!res) {
       return
     }
@@ -249,6 +248,11 @@ const TicketEditor = () => {
       const currentComment = (await client.get('ticket.comment'))['ticket.comment'].text
       resetResponse(currentComment)
 
+
+      if (currentComment !== '') {
+        return
+      }
+
       OnActionClick(ACTIONS['draft-response'])
     }
 
@@ -258,6 +262,10 @@ const TicketEditor = () => {
   const handleNewCustomerMessageDraft = async () => {
     const ticket = (await client.get('ticket')).ticket
     if (ticket?.conversation?.pop().author?.role !== 'end-user') {
+      return
+    }
+
+    if (ticket?.comment.text.trim() !== '') {
       return
     }
 
