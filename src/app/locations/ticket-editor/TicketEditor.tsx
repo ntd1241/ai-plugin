@@ -135,6 +135,7 @@ function Menu(props: MenuProps) {
         <div className="px-2 py-1.5">
           <div className="menu-section">Formalization</div>
         </div>
+        {/* forEach */}
         <Button variant={'ghost'} onClick={() => props.onClick(ACTIONS['correct-spelling'])}>
           <div className="flex flex-row w-full place-items-center">
             <IconTextSpellcheck className="size-4 mr-2 text-jarvis-5" /> {ACTIONS['correct-spelling'].title}
@@ -247,7 +248,6 @@ const TicketEditor = () => {
     const initDraftTicket = async () => {
       const currentComment = (await client.get('ticket.comment'))['ticket.comment'].text
       resetResponse(currentComment)
-
 
       if (currentComment !== '') {
         return
