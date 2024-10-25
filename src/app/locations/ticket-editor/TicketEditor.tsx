@@ -17,9 +17,10 @@ import UseAnimations from 'react-useanimations'
 import loading from 'react-useanimations/lib/loading'
 import { DraftResponse, CorrectSpelling, ShortenResponse, LengthenResponse, ResponseReturnProps } from './actions'
 import useUndo from 'use-undo'
+import { useMutation } from '@tanstack/react-query'
 
 interface ActionProps {
-  action: () => Promise<ResponseReturnProps>
+  action: () => Promise<Response>
   title: string
   onWorking: string
   onSuccess: string
@@ -57,35 +58,29 @@ const ACTIONS = {
   }
 }
 
-interface ActionProcessingProps {
-  action: ActionProps
-  result?: ResponseReturnProps
-}
-
-function ActionProcessing({ action, result }: ActionProcessingProps) {
+function ActionProcessing(props: any) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [icon, setIcon] = useState<React.ReactNode>()
   const client: any = useClient()
+  const { action, actionMutation } = props
 
   useEffect(() => {
-    if (result == null) {
+    if (actionMutation.status === 'pending') {
       setTitle(action.onWorking)
       setDescription('This may take a few seconds.')
       setIcon(<UseAnimations animation={loading} size={24} fillColor="#64748B" />)
-    } else {
-      if (result?.success) {
-        setTitle(action.onSuccess)
-        setDescription('')
-        setIcon(<IconCheck className="text-jarvis-5" />)
-      } else {
-        client.set('comment.text', 'Error')
-        setTitle(action.onFailed)
-        setDescription(result.errorMsg ?? '')
-        setIcon(<IconX className="text-failed" />)
-      }
+    } else if(actionMutation.status === 'success') {
+      setTitle(action.onSuccess)
+      setDescription('')
+      setIcon(<IconCheck className="text-jarvis-5" />)
+
+    } else if(actionMutation.status === 'error') {
+      setTitle(action.onFailed)
+      setDescription(actionMutation.error.message ?? '')
+      setIcon(<IconX className="text-failed" />)
     }
-  }, [result])
+  }, [actionMutation.status])
 
   return (
     <div className="flex flex-col">
@@ -100,6 +95,7 @@ function ActionProcessing({ action, result }: ActionProcessingProps) {
         <div className="flex flex-col">
           <span>{title}</span>
           <span className="detail">{description}</span>
+        
         </div>
       </div>
     </div>
@@ -135,7 +131,6 @@ function Menu(props: MenuProps) {
         <div className="px-2 py-1.5">
           <div className="menu-section">Formalization</div>
         </div>
-        {/* forEach */}
         <Button variant={'ghost'} onClick={() => props.onClick(ACTIONS['correct-spelling'])}>
           <div className="flex flex-row w-full place-items-center">
             <IconTextSpellcheck className="size-4 mr-2 text-jarvis-5" /> {ACTIONS['correct-spelling'].title}
@@ -180,7 +175,7 @@ const TicketEditor = () => {
 
   let messageDraftTimeout: any
 
-  //Update Zendesk Ticket Editor height
+  // Update Zendesk Ticket Editor height
   useEffect(() => {
     const resizeObserver = new ResizeObserver((entries) => {
       if (entries[0].contentRect) {
@@ -202,21 +197,40 @@ const TicketEditor = () => {
     }
   }, [client, menuState]) // Re-observe on menuState change
 
-  const [activeAction, setActiveAction] = useState(ACTIONS['draft-response'])
-  const [result, setResult] = useState<ResponseReturnProps>()
+  const [activeAction, setActiveAction] = useState<ActionProps>(ACTIONS['draft-response'])
+  const [result, setResult] = useState<Response>()
 
-  const OnActionClick = async (action: ActionProps) => {
-    client.set('comment.text', 'Generating...')
-    setMenuState('loading')
+  const actionMutation = useMutation({
+    mutationFn: async (action: ActionProps) => {
+      const actionResult = await action.action()
+      return actionResult
+    },
+    onSuccess: async (data) => {
+      await streamHandler(data)
+      setResult(data)
+      setTimeout(() => {
+        setMenuState('menu')
+      }, 2000)
+    },
+    onMutate: (action) => {
+      if(action.title === 'Draft response') {
+        client.set('comment.text', 'Generating...')
+      }
+      setMenuState('loading')
+      setResult(undefined)
+    },
+    onError: (error:Error) => {
+      setMenuState('loading')
+
+      setTimeout(() => {
+        setMenuState('menu')
+      }, 2000)
+    }
+  })
+
+  const OnActionClick = (action: ActionProps) => {
     setActiveAction(action)
-    setResult(undefined)
-    const actionResult = await action.action()
-    if (actionResult?.success) await streamHandler(actionResult.response)
-    setResult(actionResult)
-
-    setTimeout(() => {
-      setMenuState('menu')
-    }, 2000)
+    actionMutation.mutate(action)
   }
 
   // Handler for stream response
@@ -321,7 +335,7 @@ const TicketEditor = () => {
           canRedo={canRedo}
         />
       )}
-      {menuState == 'loading' && <ActionProcessing action={activeAction} result={result} />}
+      {menuState == 'loading' && <ActionProcessing action={activeAction} actionMutation={actionMutation} />}
     </div>
   )
 }

@@ -25,3 +25,8 @@ export const getTicket = async () => {
  
     return { ...ticket, comments: commentsWithDates };
  };
+
+ export const getCurrentComment = async () => {
+   const comment = await client.get("comment.text");
+   return comment["comment.text"];
+ }
