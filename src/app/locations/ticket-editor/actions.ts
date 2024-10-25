@@ -1,53 +1,92 @@
 //We handle prompt inside this file, so exported functions take no paramater
 
+import { getCurrentComment, getTicket } from '@/app/api/zendesk.api'
+
 export interface ResponseReturnProps {
-    success: boolean,
-    errorMsg?: string,
-    response?: string,
+  success: boolean
+  errorMsg?: string
+  response?: Response
 }
 
-export async function DraftResponse(): Promise<ResponseReturnProps> {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                success: true,
-                response: "Draft response"
-            });
-        }, 2000);
-    });
+export async function DraftResponse(): Promise<Response> {
+  try {
+    const ticket = await getTicket()
+
+    const response = await fetch('http://localhost:5555/api/v1/zendesk/suggest-response', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ ticket })
+    })
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`)
+    }
+
+    return response
+  } catch (error) {
+    throw new Error((error as Error).message)
+  }
 }
 
-export async function CorrectSpelling(): Promise<ResponseReturnProps> {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                success: false,
-                response: "Correct spelling",
-                errorMsg: "Something went wrong. Please try again."
-            });
-        }, 2000);
-    });
+export async function CorrectSpelling(): Promise<Response> {
+  try {
+    const currentComment = await getCurrentComment()
+    console.log(currentComment)
+    const response = await fetch('http://localhost:5555/api/v1/zendesk/enhance-response', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ type: 'Correct' })
+    })
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`)
+    }
+
+    return response
+  } catch (error) {
+    throw new Error((error as Error).message)
+  }
 }
 
-export async function ShortenResponse(): Promise<ResponseReturnProps> {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                success: true,
-                response: "Shorten response"
-            });
-        }, 2000);
-    });
+export async function ShortenResponse(): Promise<Response> {
+  try {
+    const currentComment = await getCurrentComment()
+    console.log(currentComment)
+    const response = await fetch('http://localhost:5555/api/v1/zendesk/enhance-response', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ type: 'Shorten', response: currentComment })
+    })
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`)
+    }
+
+    return response
+  } catch (error) {
+    throw new Error((error as Error).message)
+  }
 }
 
-export async function LengthenResponse(): Promise<ResponseReturnProps> {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                success: false,
-                response: "Lengthen response",
-                errorMsg: "Something went wrong. Please try again."
-            });
-        }, 2000);
-    });
+export async function LengthenResponse(): Promise<Response> {
+  try {
+    const currentComment = await getCurrentComment()
+    const response = await fetch('http://localhost:3500/enhance-response-wrongggg', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ type: 'Lengthen', response: currentComment })
+    })
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`)
+    }
+
+    return response
+  } catch (error) {
+    throw new Error((error as Error).message)
+  }
 }

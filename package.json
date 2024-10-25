@@ -10,7 +10,7 @@
     "build:dev": "vite build --mode development",
     "build": "vite build --mode production",
     "lint": "eslint . --ext js,jsx --max-warnings 0",
-    "start": "zcli apps:server src",
+    "start": "npx @zendesk/zcli apps:server src",
     "start:prod": "zcli apps:server dist"
   },
   "dependencies": {
@@ -18,6 +18,7 @@
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@tabler/icons-react": "^3.19.0",
+    "@tanstack/react-query": "^5.59.16",
     "@types/jest": "^29.5.13",
     "@types/node": "^22.7.5",
     "@types/react": "^18.3.11",
@@ -34,7 +35,9 @@
     "react-useanimations": "^2.10.0",
     "styled-components": "^5.3.6",
     "tailwind-merge": "^2.5.4",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "use-undo": "^1.1.1",
+    "zendesk_app_framework_sdk": "^2.0.11"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.1.0",
