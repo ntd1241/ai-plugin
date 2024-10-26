@@ -70,12 +70,11 @@ function ActionProcessing(props: any) {
       setTitle(action.onWorking)
       setDescription('This may take a few seconds.')
       setIcon(<UseAnimations animation={loading} size={24} fillColor="#64748B" />)
-    } else if(actionMutation.status === 'success') {
+    } else if (actionMutation.status === 'success') {
       setTitle(action.onSuccess)
       setDescription('')
       setIcon(<IconCheck className="text-jarvis-5" />)
-
-    } else if(actionMutation.status === 'error') {
+    } else if (actionMutation.status === 'error') {
       setTitle(action.onFailed)
       setDescription(actionMutation.error.message ?? '')
       setIcon(<IconX className="text-failed" />)
@@ -95,7 +94,6 @@ function ActionProcessing(props: any) {
         <div className="flex flex-col">
           <span>{title}</span>
           <span className="detail">{description}</span>
-        
         </div>
       </div>
     </div>
@@ -213,13 +211,13 @@ const TicketEditor = () => {
       }, 2000)
     },
     onMutate: (action) => {
-      if(action.title === 'Draft response') {
+      if (action.title === 'Draft response') {
         client.set('comment.text', 'Generating...')
       }
       setMenuState('loading')
       setResult(undefined)
     },
-    onError: (error:Error) => {
+    onError: (error: Error) => {
       setMenuState('loading')
 
       setTimeout(() => {
@@ -228,7 +226,7 @@ const TicketEditor = () => {
     }
   })
 
-  const OnActionClick = (action: ActionProps) => {
+  const onActionClick = (action: ActionProps) => {
     setActiveAction(action)
     actionMutation.mutate(action)
   }
@@ -267,7 +265,7 @@ const TicketEditor = () => {
         return
       }
 
-      OnActionClick(ACTIONS['draft-response'])
+      onActionClick(ACTIONS['draft-response'])
     }
 
     initDraftTicket()
@@ -290,11 +288,23 @@ const TicketEditor = () => {
     client.set('comment.text', 'Waiting for more messages...')
 
     messageDraftTimeout = setTimeout(() => {
-      OnActionClick(ACTIONS['draft-response'])
+      onActionClick(ACTIONS['draft-response'])
     }, 5000)
   }
 
-  // Register event to draft response when new end-user's comment send
+
+  client.on('app.activated', async () => {
+    const currentComment = (await client.get('ticket.comment'))['ticket.comment'].text
+
+    if (currentComment !== '') {
+      return
+    }
+
+    onActionClick(ACTIONS['draft-response'])
+  })
+
+    // Register event to draft response when new end-user's comment send
+
   useEffect(() => {
     const register = async () => {
       const ticket = (await client.get('ticket')).ticket
@@ -328,7 +338,7 @@ const TicketEditor = () => {
     <div ref={ref}>
       {menuState == 'menu' && (
         <Menu
-          onClick={(action) => OnActionClick(action)}
+          onClick={(action) => onActionClick(action)}
           onRedo={onRedoResponse}
           onUndo={onUndoResponse}
           canUndo={canUndo}
