@@ -70,20 +70,16 @@ function ActionProcessing(props: any) {
       setTitle(action.onWorking)
       setDescription('This may take a few seconds.')
       setIcon(<UseAnimations animation={loading} size={24} fillColor="#64748B" />)
-<<<<<<< HEAD
     } else if(actionMutation.status === 'success') {
       setTitle(action.onSuccess)
       setDescription('')
       setIcon(<IconCheck className="text-jarvis-5" />)
 
-    } else if(actionMutation.status === 'error') {
-=======
     } else if (actionMutation.status === 'success') {
       setTitle(action.onSuccess)
       setDescription('')
       setIcon(<IconCheck className="text-jarvis-5" />)
     } else if (actionMutation.status === 'error') {
->>>>>>> Hoang-branch
       setTitle(action.onFailed)
       setDescription(actionMutation.error.message ?? '')
       setIcon(<IconX className="text-failed" />)
@@ -103,10 +99,6 @@ function ActionProcessing(props: any) {
         <div className="flex flex-col">
           <span>{title}</span>
           <span className="detail">{description}</span>
-<<<<<<< HEAD
-        
-=======
->>>>>>> Hoang-branch
         </div>
       </div>
     </div>
@@ -224,21 +216,14 @@ const TicketEditor = () => {
       }, 2000)
     },
     onMutate: (action) => {
-<<<<<<< HEAD
-      if(action.title === 'Draft response') {
-=======
+
       if (action.title === 'Draft response') {
->>>>>>> Hoang-branch
         client.set('comment.text', 'Generating...')
       }
       setMenuState('loading')
       setResult(undefined)
     },
-<<<<<<< HEAD
-    onError: (error:Error) => {
-=======
     onError: (error: Error) => {
->>>>>>> Hoang-branch
       setMenuState('loading')
 
       setTimeout(() => {
@@ -247,11 +232,7 @@ const TicketEditor = () => {
     }
   })
 
-<<<<<<< HEAD
-  const OnActionClick = (action: ActionProps) => {
-=======
   const onActionClick = (action: ActionProps) => {
->>>>>>> Hoang-branch
     setActiveAction(action)
     actionMutation.mutate(action)
   }
@@ -289,12 +270,7 @@ const TicketEditor = () => {
       if (currentComment !== '') {
         return
       }
-
-<<<<<<< HEAD
-      OnActionClick(ACTIONS['draft-response'])
-=======
       onActionClick(ACTIONS['draft-response'])
->>>>>>> Hoang-branch
     }
 
     initDraftTicket()
@@ -317,16 +293,10 @@ const TicketEditor = () => {
     client.set('comment.text', 'Waiting for more messages...')
 
     messageDraftTimeout = setTimeout(() => {
-<<<<<<< HEAD
-      OnActionClick(ACTIONS['draft-response'])
-    }, 5000)
-  }
-
-  // Register event to draft response when new end-user's comment send
-=======
       onActionClick(ACTIONS['draft-response'])
     }, 5000)
   }
+
 
 
   client.on('app.activated', async () => {
@@ -341,7 +311,7 @@ const TicketEditor = () => {
 
     // Register event to draft response when new end-user's comment send
 
->>>>>>> Hoang-branch
+
   useEffect(() => {
     const register = async () => {
       const ticket = (await client.get('ticket')).ticket
@@ -375,11 +345,8 @@ const TicketEditor = () => {
     <div ref={ref}>
       {menuState == 'menu' && (
         <Menu
-<<<<<<< HEAD
-          onClick={(action) => OnActionClick(action)}
-=======
+
           onClick={(action) => onActionClick(action)}
->>>>>>> Hoang-branch
           onRedo={onRedoResponse}
           onUndo={onUndoResponse}
           canUndo={canUndo}
@@ -391,8 +358,5 @@ const TicketEditor = () => {
   )
 }
 
-<<<<<<< HEAD
 export default TicketEditor
-=======
-export default TicketEditor
->>>>>>> Hoang-branch
+
