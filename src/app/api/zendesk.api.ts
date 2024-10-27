@@ -11,6 +11,8 @@ export const getTicket = async () => {
     const { comments } = await client.request({
        url: `/api/v2/tickets/${ticket.id}/comments.json`,
     });
+
+    console.log(comments)
  
     const internalComments = comments.filter((comment: any) => !comment.public);
     const publicComments = ticket.comments.filter(

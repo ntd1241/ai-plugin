@@ -1,6 +1,6 @@
 //We handle prompt inside this file, so exported functions take no paramater
 
-import { getCurrentComment, getTicket } from '@/app/api/zendesk.api'
+import client, { getCurrentComment, getTicket } from '@/app/api/zendesk.api'
 
 export interface ResponseReturnProps {
   success: boolean
@@ -10,7 +10,8 @@ export interface ResponseReturnProps {
 
 export async function DraftResponse(): Promise<Response> {
   try {
-    const ticket = await getTicket()
+    const ticket = (await client.get("ticket")).ticket;
+    console.log(ticket)
 
     const response = await fetch('http://localhost:5555/api/v1/zendesk/suggest-response', {
       method: 'POST',
